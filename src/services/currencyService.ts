@@ -1,51 +1,29 @@
-import { GoogleGenAI, Type } from "@google/genai";
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+export async function convertCurrency(
+  amount: number,
+  from: string,
+  to: string
+): Promise<{ amount: number; rate: number }> {
+  const response = await fetch(`${API_BASE_URL}/api/currency/convert`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ amount, from, to }),
+  });
 
-export async function convertCurrency(amount: number, from: string, to: string): Promise<{ amount: number; rate: number }> {
-  const prompt = `What is the current real-time exchange rate from ${from} to ${to}? 
-  Calculate ${amount} ${from} in ${to}.`;
-
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: prompt,
-      config: {
-        tools: [{ googleSearch: {} }],
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            rate: {
-              type: Type.NUMBER,
-              description: "The exchange rate from source to target currency",
-            },
-            convertedAmount: {
-              type: Type.NUMBER,
-              description: "The calculated amount in the target currency",
-            },
-          },
-          required: ["rate", "convertedAmount"],
-        },
-      },
-    });
-
-    const text = response.text || "{}";
-    const data = JSON.parse(text);
-
-    if (typeof data.rate !== 'number' || typeof data.convertedAmount !== 'number') {
-      throw new Error("Invalid response format from AI");
-    }
-
-    return {
-      amount: data.convertedAmount,
-      rate: data.rate
-    };
-  } catch (error) {
-    console.error("Currency conversion failed:", error);
-    // Fallback logic or rethrow
-    throw error;
+  if (!response.ok) {
+    console.error('Currency conversion failed with status', response.status);
+    throw new Error("La conversion de devise a échoué. Veuillez réessayer plus tard.");
   }
+
+  const data = (await response.json()) as { amount: number; rate: number };
+  if (typeof data.amount !== 'number' || typeof data.rate !== 'number') {
+    throw new Error('Réponse invalide du serveur de conversion.');
+  }
+
+  return data;
 }
 
 export const POPULAR_CURRENCIES = [

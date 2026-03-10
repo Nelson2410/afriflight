@@ -93,12 +93,16 @@ cd afriflights
 # 2. Installer les dépendances
 npm install
 
-# 3. Configurer la clé API
+# 3. Configurer l'environnement
 cp .env.example .env
 # Ouvrir .env et renseigner votre clé :
-# VITE_GEMINI_API_KEY="AIza..."
+# GEMINI_API_KEY="AIza..."
+# VITE_API_URL="http://localhost:3001"
 
-# 4. Lancer en mode développement
+# 4. Lancer le backend (Express)
+npm run server
+
+# 5. Lancer le frontend (Vite)
 npm run dev
 ```
 
@@ -139,12 +143,10 @@ afriflights/
 
 ## 🌐 Déploiement
 
-AfriFlights peut être déployé gratuitement sur [Vercel](https://vercel.com) ou [Netlify](https://netlify.com) :
+Pour un déploiement complet, il faut prévoir :
 
-1. Pousser le code sur GitHub
-2. Connecter votre dépôt à Vercel / Netlify
-3. Ajouter la variable d'environnement `VITE_GEMINI_API_KEY` dans le tableau de bord
-4. Déployer 🚀
+- Un hébergement pour le **backend Node/Express** (Railway, Render, Fly.io, Cloud Run, etc.) avec la variable d'environnement `GEMINI_API_KEY`.
+- Un hébergement pour le **frontend** (Vercel, Netlify, ou équivalent), configuré avec `VITE_API_URL` pointant vers l'URL publique du backend.
 
 ---
 
