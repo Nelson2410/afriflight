@@ -1,0 +1,7 @@
+{
+  "name": "AfriFlights",
+  "description": "Comparateur indépendant de vols vers et à travers l'Afrique avec prix en temps réel.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
